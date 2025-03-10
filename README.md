@@ -1,146 +1,93 @@
-# Local-GenAI Search - Local generative search
+Local GenAI Search - Local Generative Search Engine
+Local GenAI Search is a lightweight, local generative search engine designed to run on a 32GB laptop or computer (developed and tested on a MacBook Pro M2 with 32GB RAM). Powered by the Qwen/Qwen2.5-0.5B-Instruct model, this tool allows users to ask questions about the content of their local files, providing concise answers with references to relevant documents that can be opened directly.
 
-Local GenAI Search is your local generative search engine 
-based on Llama3 model that can run localy on 32GB 
-laptop or computer (developed with MacBookPro M2 with 32BG RAM).
+The project uses MS MARCO embeddings for semantic search, passing top-ranking documents to the Qwen2.5-0.5B model for response generation. It runs entirely offline, ensuring privacy and independence from external APIs—perfect for personal or sensitive data.
 
-The main goal of the project is that it lets user ask questions 
-about content of their local files, which it answers in 
-concise manner with referencing relevant documents that can be 
-then opened. 
+Features
+Fully Local: Operates offline with the Qwen/Qwen2.5-0.5B-Instruct model—no API keys required.
+File Support: Indexes and searches .pdf, .txt, .docx, and .pptx files in a folder and its subfolders.
+Semantic Search: Leverages MS MARCO embeddings for accurate document retrieval.
+User Interface: Includes a Streamlit-based UI for easy interaction.
+Lightweight: Optimized for modest hardware (e.g., 32GB RAM laptops).
+How to Run
+Prerequisites
+A machine with at least 32GB RAM (e.g., MacBook Pro M2).
+Python 3.8+ installed.
+Git installed to clone the repository.
+Setup Instructions
+Clone the Repository:
 
-![img.png](img.png)
-
-The engine is using MS MARCO embeddings for semantic search,
-with top documents being passed to  Llama 3 model. 
-
-By default, it would work with NVIDIA API, and use 70B parameter Llama 3 
-model. However, if you used all your NVIDIA API credits or 
-do not want to use API for searching your local documents, 
-it can also run locally, using 8B parameter model. 
-
-
-## How to run
-
-In order to run your Local Generative AI Search (given you have sufficiently string machine to run Llama3), you need to 
-download the repository:
-
-````
 git clone https://github.com/nikolamilosevic86/local-gen-search.git
-````
-You will need to install all the requirements:
-```commandline
+cd local-gen-search
+Install Requirements:
+
+
 pip install -r requirements.txt
-```
+Index Your Files:
+Run the indexing script to process a folder of documents:
 
-You need to create a file called ``environment_var.py``, and put there
-your HuggingFace API key. The file should look like this:
 
-```python
-import os
-
-hf_token = "hf_you_api_key"
-nvidia_key = "nvapi-your_nvidia_nim_api_key"
-```
-
-API key for HuggingFace can be retrieved at ``https://huggingface.co/settings/tokens``.
-In order to run generative component, you need to request
-access to Llama3 model at ```https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct```
-
-API key for Nvidia NIM API Endpoint can be retrieved at ```https://build.nvidia.com/explore/discover```
-
-The next step is to index a folder and its subfolders containing
-documents that you would like to search. You can do it using
-the ``index.py`` file. Run
-
-```commandline
 python index.py path/to/folder
-```
-As example, you can run it with TestFolder provided:
-```commandline
+Example with the provided TestFolder:
+
+
 python index.py TestFolder
-```
-This will create a qdrant client index locally and index all the files
-in this folder and its subfolders with extensions ```.pdf```,```.txt```,```.docx```,```.pptx```
+This creates a local Qdrant index of all .pdf, .txt, .docx, and .pptx files.
 
-The next step would be to run the generative search service.
-For this you can run:
+Start the Search Service:
+Launch the local server:
 
-```commandline
+
 python uvicorn_start.py
-```
+The first run may take a few minutes to download the Qwen/Qwen2.5-0.5B-Instruct model from Hugging Face.
 
-This will start a local server, that you can query using postman, 
-or send POST requests. Loading of models (including 
-downloading from Huggingface, may take few minutes, 
-especially for the first time). There are two interfaces:
-```commandline
+Query the Service:
+Use the following endpoints with a POST request:
+
 http://127.0.0.1:8000/search
-```
-
-```commandline
 http://127.0.0.1:8000/ask_localai
-```
+Example payload:
 
-Both interfaces need body in a format:
 
-```commandline
-{"query":"What are knowledge graphs?"}
-```
-and headers for Accept and Content-Type set to ``application/json``.
+{"query": "What are knowledge graphs?"}
+Set headers: Accept: application/json and Content-Type: application/json.
 
-Here is a code example:
+Sample Python code:
 
-```python
 import requests
 import json
 
 url = "http://127.0.0.1:8000/ask_localai"
-
-payload = json.dumps({
-  "query": "What are knowledge graphs?"
-})
+payload = json.dumps({"query": "What are knowledge graphs?"})
 headers = {
-  'Accept': 'application/json',
-  'Content-Type': 'application/json'
+    'Accept': 'application/json',
+    'Content-Type': 'application/json'
 }
 
-response = requests.request("POST", url, headers=headers, data=payload)
-
+response = requests.post(url, headers=headers, data=payload)
 print(response.text)
-```
-Finally, streamlit user interface can be started in the following way:
-```commandline
+Launch the UI:
+Start the Streamlit interface:
+
+
 streamlit run user_interface.py
-```
+Open your browser to interact with the tool.
 
-Now you can use the user interface and ask question that will be 
-answered based on the files on your file system.
+Technology Used
+Qwen/Qwen2.5-0.5B-Instruct: A lightweight, instruction-tuned model for local generative answers.
+MS MARCO Embeddings: For semantic search over local documents.
+Langchain: For chaining retrieval and generation steps.
+Transformers: To load and run the Qwen model.
+PyPDF2: For parsing PDF files.
+Qdrant: Local vector database for indexing.
+Why Qwen2.5-0.5B?
+The Qwen/Qwen2.5-0.5B-Instruct model is a compact, efficient choice with 0.5 billion parameters, delivering strong performance on resource-constrained devices. It runs locally without API dependencies, making it ideal for a standalone search engine on a 32GB machine.
 
-## Technology used
+Learn More
+For a detailed guide on building a generative search engine like this, see:
 
-- Llama3 8B
-- NVIDIA NIM API Endpoints (For Llama 3 70B)
-- Langchain
-- Transformers
-- MSMarco IR embedding models
-- PyPDF2
-
-## Towards Data Science article
-If you want to see more details on development of this tool, you can read 
-[How to Build a Generative Search Engine for Your Local Files Using Llama 3 | Towards Data Science](https://towardsdatascience.com/how-to-build-a-generative-search-engine-for-your-local-files-using-llama-3-399551786965)
-
-Also, you can check the following papers:
-```
-@article{kovsprdic2024verif,
-  title={Verif.ai: Towards an Open-Source Scientific Generative Question-Answering System with Referenced and Verifiable Answers},
-  author={Ko{\v{s}}prdi{\'c}, Milo{\v{s}} and Ljaji{\'c}, Adela and Ba{\v{s}}aragin, Bojana and Medvecki, Darija and Milo{\v{s}}evi{\'c}, Nikola},
-  journal={arXiv preprint arXiv:2402.18589},
-  year={2024}
-}
-```
+How to Build a Generative Search Engine for Your Local Files | Towards Data Science
 
 
-## Contributors
-
-* [Nikola Milosevic](https://github.com/nikolamilosevic86)
+Contributors
+Benito - Creator and lead developer.
