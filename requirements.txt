@@ -1,0 +1,35 @@
+# Core PyTorch and related
+torch==2.1.0  
+torchvision~=0.16.0
+accelerate  
+
+# Transformers and NLP
+transformers==4.49.0  
+sentence-transformers==3.4.1 
+huggingface-hub==0.29.2
+openai  
+
+# LangChain ecosystem
+langchain==0.0.335  
+langgraph  
+langchain-text-splitters  
+langchain_community  
+langchain-qdrant  
+
+# Vector stores and embeddings
+qdrant-client  
+faiss-cpu==1.7.4
+tiktoken  
+
+# Document processing
+PyPDF2  
+python-docx  
+python-pptx  
+
+# Web frameworks and APIs
+fastapi~=0.111.0
+uvicorn  
+gradio_client==0.5.0
+streamlit  
+# Data modeling
+pydantic==1.10.11
