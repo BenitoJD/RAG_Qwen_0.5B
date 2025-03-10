@@ -15,10 +15,6 @@ A machine with at least 32GB RAM (e.g., MacBook Pro M2).
 Python 3.8+ installed.
 Git installed to clone the repository.
 Setup Instructions
-Clone the Repository:
-
-git clone https://github.com/nikolamilosevic86/local-gen-search.git
-cd local-gen-search
 Install Requirements:
 
 
